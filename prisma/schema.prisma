@@ -1,0 +1,111 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  email        String   @unique
+  phone_number String   @unique
+  password     String
+  wines        Wine[] // Users can manage multiple wines
+  first_name   String
+  middle_name  String
+  last_name    String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  USER
+}
+
+model Wine {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  userId           String            @unique @db.ObjectId
+  user             User              @relation(fields: [userId], references: [id])
+  productionStages ProductionStage[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model ProductionStage {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  wine          Wine           @relation(fields: [wineId], references: [id])
+  wineId        String         @unique @db.ObjectId
+  stage         String
+  status        String
+  startDate     DateTime
+  endDate       DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  Harvesting    Harvesting?
+  Crushing      Crushing?
+  Fermentation  Fermentation?
+  Clarification Clarification?
+  Aging         Aging?
+  Bottling      Bottling?
+}
+
+model Harvesting {
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+  stage     ProductionStage @relation(fields: [stageId], references: [id])
+  stageId   String          @unique @db.ObjectId
+  quality   String
+  quantity  Float
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model Crushing {
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+  stage     ProductionStage @relation(fields: [stageId], references: [id])
+  stageId   String          @unique @db.ObjectId
+  yield     Float
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model Fermentation {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  stage       ProductionStage @relation(fields: [stageId], references: [id])
+  stageId     String          @unique @db.ObjectId
+  temperature Float
+  sugarLevel  Float
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model Clarification {
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+  stage     ProductionStage @relation(fields: [stageId], references: [id])
+  stageId   String          @unique @db.ObjectId
+  clarity   String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model Aging {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  stage       ProductionStage @relation(fields: [stageId], references: [id])
+  stageId     String          @unique @db.ObjectId
+  agingVessel String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model Bottling {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  stage         ProductionStage @relation(fields: [stageId], references: [id])
+  stageId       String          @unique @db.ObjectId
+  bottlingBatch String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
