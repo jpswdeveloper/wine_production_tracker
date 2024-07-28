@@ -1,34 +1,37 @@
-import { serialize } from "cookie";
-import { sign, verify, JwtPayload, VerifyErrors } from "jsonwebtoken";
+import { cookies } from "next/headers";
+import { JWTPayload, jwtVerify, SignJWT } from "jose";
 
-export const session = (encryptedSessionData: object | string) =>
-  serialize("userToken", encryptData(encryptedSessionData), {
+export const session = async (encryptedSessionData: object) => {
+  const token = await encryptData(encryptedSessionData);
+  return cookies().set("userToken", token, {
     httpOnly: true,
     secure: false,
     maxAge: 60 * 60 * 24 * 2, // Two Day
     path: "/"
   });
-
-export const encryptData = (data: object | string): string => {
-  return sign(data, process.env.JWTSECRETKEY as string);
 };
 
-export const verifyData = async (
-  token: string | undefined
-): Promise<string | object> => {
-  if (token == undefined) {
-    throw Error("No Token");
-  }
+export const encryptData = async (payload: object): Promise<string> => {
+  const iat = Math.floor(Date.now() / 1000); // Issued at time
+  const exp = iat + 60 * 60; // Expiration time (1 hour)
 
-  const decode = verify(
-    token,
-    process.env.JWTSECRETKEY as string,
-    (err: VerifyErrors | null, payload) => {
-      if (err) {
-        throw Error("Unauthorize");
-      }
-      return payload;
-    }
-  ) as unknown as JwtPayload;
-  return decode;
+  const jwt: string = await new SignJWT({ ...payload })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt(iat)
+    .setExpirationTime(exp)
+    .sign(new TextEncoder().encode(process.env.JWTSECRETKEY as string));
+
+  return jwt;
+};
+
+export const verifyData = async (token: string) => {
+  try {
+    const { payload } = await jwtVerify(
+      token,
+      new TextEncoder().encode(process.env.JWTSECRETKEY as string)
+    );
+    return { status: 200, payload };
+  } catch (error) {
+    return { status: 401, error };
+  }
 };

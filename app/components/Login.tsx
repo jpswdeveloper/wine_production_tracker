@@ -1,8 +1,9 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
 import { auth_login_action } from './action'
 import toast from 'react-hot-toast'
+import { useRouter } from 'next/navigation'
 
 const loginMessage = {
   message: '',
@@ -10,14 +11,19 @@ const loginMessage = {
 }
 
 const LoginComp = () => {
+  const router = useRouter()
   const { pending, data } = useFormStatus()
   const [state, formAction] = useFormState(auth_login_action, loginMessage)
-  // if (state.success == true) {
-  //   toast.success(state.message || 'Login Successfully')
-  // }
-  // if (state.success == false) {
-  //   toast.error(state.message || 'Unauthorized')
-  // }
+
+  useEffect(() => {
+    if (state.success == true) {
+      router.replace('/')
+      toast.success(state.message || 'Login Successfully')
+    }
+    if (state.success == false) {
+      toast.error(state.message || 'Unauthorized')
+    }
+  }, [state, router])
 
   return (
     <div>

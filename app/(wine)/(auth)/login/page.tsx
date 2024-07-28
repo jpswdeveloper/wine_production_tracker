@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import React, { useState } from 'react'
-import Wine from '../../../../public/images/maja-petric-vGQ49l9I4EE-unsplash.jpg'
+import Wine from '/public/images/maja-petric-vGQ49l9I4EE-unsplash.jpg'
 import LoginComp from '@/app/components/Login'
 const Login = () => {
   return (

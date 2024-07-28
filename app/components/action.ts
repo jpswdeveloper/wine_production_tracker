@@ -1,7 +1,8 @@
 "use server";
-import { RegisterSchemaType } from "../schema/register";
+import { RegisterSchemaType } from "../utils/schema/register";
 import { createUser, findSingleUser } from "../server/user/index";
 import bcrypt from "bcryptjs";
+import { session } from "../utils/session";
 export const auth_login_action = async (data: any, form: FormData) => {
   const email = form.get("email") as string;
   const password = form.get("password") as string;
@@ -12,16 +13,8 @@ export const auth_login_action = async (data: any, form: FormData) => {
       message: "Unauthorized"
     };
   }
-  // Set the cookies to the server
-  await fetch("/api/auth/login", {
-    method: "POST",
 
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ userId: user.id })
-  });
-
+  session({ userId: user.id });
   return {
     success: true,
     data: { email, password },

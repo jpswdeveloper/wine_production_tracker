@@ -11,7 +11,7 @@ import {
   RegisterSchema,
   RegisterSchemaType,
   userEntries
-} from '../schema/register'
+} from '../utils/schema/register'
 
 import { useRouter } from 'next/navigation'
 
