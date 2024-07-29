@@ -1,10 +1,6 @@
-import Image from 'next/image'
 import React from 'react'
 import { IoIosNotificationsOutline } from 'react-icons/io'
-import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { FaDollarSign, FaSearch } from 'react-icons/fa'
-import { IoLogOut } from 'react-icons/io5'
 
 const NavBar = () => {
   return (
@@ -28,9 +24,6 @@ const NavBar = () => {
           />
           <AvatarFallback>WN</AvatarFallback>
         </Avatar>
-        <button className='btn btn-circle items-center flex justify-center'>
-          <IoLogOut size={30} />
-        </button>
       </div>
     </div>
   )
