@@ -11,6 +11,12 @@ export const session = async (encryptedSessionData: object) => {
   });
 };
 
+// Logout
+export const destroySession = () => {
+  cookies().set("userToken", "", {
+    expires: new Date(0)
+  });
+};
 export const encryptData = async (payload: object): Promise<string> => {
   const iat = Math.floor(Date.now() / 1000); // Issued at time
   const exp = iat + 60 * 60; // Expiration time (1 hour)
@@ -24,7 +30,9 @@ export const encryptData = async (payload: object): Promise<string> => {
   return jwt;
 };
 
-export const verifyData = async (token: string) => {
+export const verifyData = async (
+  token: string
+): Promise<{ status: number; payload?: JWTPayload; error?: any }> => {
   try {
     const { payload } = await jwtVerify(
       token,

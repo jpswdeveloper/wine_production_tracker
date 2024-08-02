@@ -2,7 +2,13 @@
 import { RegisterSchemaType } from "../utils/schema/register";
 import { createUser, findSingleUser } from "../server/user/index";
 import bcrypt from "bcryptjs";
-import { session } from "../utils/session";
+import { destroySession, session, verifyData } from "../utils/session";
+import { Prisma, User } from "@prisma/client";
+import { createWineDA } from "../server/wine/create";
+import { WineT } from "../utils/schema/wine";
+import { NextRequest, NextResponse } from "next/server";
+import { request } from "http";
+import { useRouter } from "next/router";
 export const auth_login_action = async (data: any, form: FormData) => {
   const email = form.get("email") as string;
   const password = form.get("password") as string;
@@ -17,7 +23,7 @@ export const auth_login_action = async (data: any, form: FormData) => {
   session({ userId: user.id });
   return {
     success: true,
-    data: { email, password },
+    data: { email, password, user },
     message: "Login successfully ✌️✌️"
   };
 };
@@ -56,4 +62,58 @@ export const auth_register_action = async (data: RegisterSchemaType) => {
       message: "Something is wrong"
     };
   }
+};
+
+// Wine Action
+export const createWineAction = async (
+  data: WineT
+): Promise<{
+  message: string;
+  status: number;
+  success: boolean;
+}> => {
+  const user = (await getUser()) as unknown as User;
+  console.log("user", user);
+  try {
+    await createWineDA({
+      ...data,
+      user: {
+        connect: {
+          id: user?.id
+        }
+      }
+    });
+    return {
+      message: "Wine created successfully",
+      status: 200,
+      success: true
+    };
+  } catch (error: any) {
+    return {
+      message: error?.message || "Failed to create wine",
+      status: error?.status || 400,
+      success: false
+    };
+  }
+};
+export const getUser = async (request?: NextRequest) => {
+  try {
+    // console.log("Get user Middle ware is running");
+    // const token = request.cookies.get("userToken");
+    // if (!token) {
+    //   throw Error("Unauthorized");
+    // }
+    // const verifyUser = await verifyData(token?.value as string);
+    // console.log("ver", verifyUser);
+    // if (verifyUser.status == 401) {
+    //   return NextResponse.redirect(new URL("/auth/login", request.url));
+    // }
+    // return verifyUser.payload as User | null;
+  } catch (e) {
+    // return NextResponse.redirect(new URL("/auth/login", request.url));
+  }
+};
+
+export const logoutAction = async () => {
+  destroySession();
 };

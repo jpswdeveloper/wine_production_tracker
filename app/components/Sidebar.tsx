@@ -6,10 +6,17 @@ import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import { Avatar } from '@/components/ui/avatar'
 import { LogOut } from 'lucide-react'
+import { useAppDispatch } from '@/lib/hook'
+import { logOut } from '@/lib/feature/auth/authSlice'
+import { logoutAction } from './action'
 
 const Sidebar = () => {
   const pathname = usePathname()
-
+  const dispatch = useAppDispatch()
+  const handleLogut = () => {
+    dispatch(logOut())
+    logoutAction()
+  }
   return (
     <div className='flex flex-col justify-start  h-screen overflow-hidden p-5 relative'>
       {/* Add Logo */}
@@ -50,14 +57,14 @@ const Sidebar = () => {
           Users
         </Link>
         <Link
-          href='/wines'
+          href='/product'
           className={
-            pathname == '/wines'
+            pathname == '/product'
               ? 'bg-sky-700 active text-white p-5 w-full h-[50px] items-center justify-start flex rounded-l-lg'
               : 'text-black bg-slate-50 flex p-5 w-full h-[50px] items-center justify-start rounded-l-lg'
           }
         >
-          Wines
+          Product
         </Link>
         <Link
           href='/stages'
@@ -120,7 +127,10 @@ const Sidebar = () => {
         >
           Wine Report
         </Link>
-        <button className='flex items-center gap-4 absolute bottom-[50px] left-[50px]'>
+        <button
+          className='flex items-center gap-4 absolute bottom-[20px] bg-sky-700 w-[170px] p-3 justify-center text-white rounded-sm'
+          onClick={handleLogut}
+        >
           <LogOut />
           Logout
         </button>

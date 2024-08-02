@@ -4,24 +4,45 @@ import { useFormState, useFormStatus } from 'react-dom'
 import { auth_login_action } from './action'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
+import { useAppDispatch, useAppSelector } from '@/lib/hook'
+import { setAuth } from '@/lib/feature/auth/authSlice'
+import { User } from '@prisma/client'
 
 const loginMessage = {
   message: '',
-  success: false
+  success: false,
+  user: null as User | null
 }
 
 const LoginComp = () => {
   const router = useRouter()
   const { pending, data } = useFormStatus()
   const [state, formAction] = useFormState(auth_login_action, loginMessage)
+  // Attach user data into the redux
+  const auth = useAppSelector(state => state.auth)
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     if (state.success == true) {
+      console.log({
+        isAuthenticated: true,
+        user: state.data?.user || null
+      })
+      dispatch(
+        setAuth({
+          isAuthenticated: true,
+          user: state.data?.user || null
+        })
+      )
+
       router.replace('/')
       toast.success(state.message || 'Login Successfully')
     }
     if (state.success == false) {
       toast.error(state.message || 'Unauthorized')
+    }
+    if (auth.isAuthenticated) {
+      router.replace('/')
     }
   }, [state, router])
 

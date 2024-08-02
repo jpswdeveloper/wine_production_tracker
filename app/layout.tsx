@@ -4,6 +4,10 @@ import './globals.css'
 import NavBar from './components/navbar'
 import Sidebar from './components/Sidebar'
 import { cn } from '@/lib/utils'
+import { Provider } from 'react-redux'
+import { store } from '@/lib/store'
+import { StoreProvider } from '@/lib/Provider'
+import AuthorizedLayout from './Authorized'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -20,26 +24,17 @@ export default function RootLayout ({
   children: React.ReactNode
 }>) {
   return (
-    <html lang='en' suppressHydrationWarning>
-      <body
-        className={cn(
-          'min-h-screen bg-background font-sans antialiased p-0 m-0 overflow-hidden',
-          fontSans.variable
-        )}
-      >
-        <div className='flex w-full h-full '>
-          <div className='w-[250px] h-full flex items-center'>
-            <Sidebar />
-          </div>
-          <div className='bg-[#F5F6F8] flex items-start w-full h-screen flex-col px-2 py-2 '>
-            <NavBar />
-            {children}
-          </div>
-        </div>
-      </body>
-    </html>
+    <StoreProvider>
+      <html lang='en' suppressHydrationWarning>
+        <body
+          className={cn(
+            'min-h-screen bg-background font-sans antialiased p-0 m-0 overflow-hidden',
+            fontSans.variable
+          )}
+        >
+          <AuthorizedLayout>{children}</AuthorizedLayout>
+        </body>
+      </html>
+    </StoreProvider>
   )
 }
-// ;<div>
-//   <Toaster position='bottom-left' />
-// </div>
