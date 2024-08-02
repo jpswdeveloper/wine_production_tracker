@@ -7,9 +7,9 @@ export type WineT = {
   userId?: string;
 };
 export const CreateWineSchema = zod.object({
-  name: zod.string(),
-  description: zod.string(),
-  type: zod.string(),
+  name: zod.string().min(1),
+  description: zod.string().min(1),
+  type: zod.string().min(1),
   userId: zod.string().optional()
 });
 

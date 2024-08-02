@@ -72,14 +72,14 @@ export const createWineAction = async (
   status: number;
   success: boolean;
 }> => {
-  const user = (await getUser()) as unknown as User;
-  console.log("user", user);
   try {
+    const { userId, ...otherData } = data;
+    console.log("data", otherData, userId);
     await createWineDA({
-      ...data,
+      ...otherData,
       user: {
         connect: {
-          id: user?.id
+          id: userId
         }
       }
     });

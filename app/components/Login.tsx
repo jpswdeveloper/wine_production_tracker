@@ -44,7 +44,7 @@ const LoginComp = () => {
     if (auth.isAuthenticated) {
       router.replace('/')
     }
-  }, [state, router])
+  }, [state, router, auth, dispatch])
 
   return (
     <div>

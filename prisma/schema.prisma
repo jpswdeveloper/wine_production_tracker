@@ -29,10 +29,11 @@ enum Role {
 model Wine {
   id               String            @id @default(auto()) @map("_id") @db.ObjectId
   name             String
-  userId           String            @unique @db.ObjectId
+  userId           String            @db.ObjectId
   user             User              @relation(fields: [userId], references: [id])
   productionStages ProductionStage[]
   description      String?
+  type             String?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 }
@@ -40,7 +41,7 @@ model Wine {
 model ProductionStage {
   id            String         @id @default(auto()) @map("_id") @db.ObjectId
   wine          Wine           @relation(fields: [wineId], references: [id])
-  wineId        String         @unique @db.ObjectId
+  wineId        String         @db.ObjectId
   stage         String
   status        String
   startDate     DateTime

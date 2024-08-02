@@ -15,8 +15,7 @@ import {
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { ColumnDef } from '@tanstack/react-table'
 import moment from 'moment'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import React, { useState } from 'react'
+import { Toaster } from 'react-hot-toast'
 
 const WinePage = () => {
   const data: Wine[] = []
@@ -31,6 +30,7 @@ const WinePage = () => {
           description='Please Enter detail wine'
         />
       </div>
+      <Toaster position='bottom-left' />
     </div>
   )
 }

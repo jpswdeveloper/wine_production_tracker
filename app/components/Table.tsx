@@ -40,6 +40,7 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { DataTablePagination } from '../components/dataTablePagination'
+import { Wine } from '@prisma/client'
 
 // const data: Payment[] = [
 //   {
@@ -171,16 +172,16 @@ import { DataTablePagination } from '../components/dataTablePagination'
 //     }
 //   }
 // ]
-
-export function DataTableDemo ({
+interface DataTableDemoProps {
+  data: any[]
+  columns: ColumnDef<Wine>[]
+  searchField: string
+}
+export const DataTableDemo: React.FC<DataTableDemoProps> = ({
   data,
   columns,
   searchField
-}: {
-  data: any
-  columns: any
-  searchField: string
-}) {
+}) => {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
