@@ -18,7 +18,7 @@ import { useForm } from 'react-hook-form'
 import { CreateWineSchema } from '../utils/schema/wine'
 import { WineT } from '../utils/schema/wine'
 import { createWineAction } from './action'
-import toast from 'react-hot-toast'
+import toast, { ToastBar } from 'react-hot-toast'
 import { useAppSelector } from '@/lib/hook'
 import { useRouter, useSearchParams } from 'next/navigation'
 
@@ -36,6 +36,7 @@ export function CreateProduct ({
   const router = useRouter()
   useEffect(() => {
     if (success == 'true') {
+      router.refresh()
       router.push('/product')
     }
   }, [success, router])
@@ -63,6 +64,7 @@ export function CreateProduct ({
           </DialogContent>
         </Dialog>
       )}
+      {/* <ToastBar position={'bottom-left'} toast={''} /> */}
     </>
   )
 }
@@ -86,6 +88,7 @@ export const DialogContentForm = () => {
   useEffect(() => {
     if (success) {
       toast.success(message)
+      router.refresh()
       router.push('/product?success=true')
     }
   }, [message, success, router])

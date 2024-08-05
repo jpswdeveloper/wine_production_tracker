@@ -9,6 +9,8 @@ import { WineT } from "../utils/schema/wine";
 import { NextRequest, NextResponse } from "next/server";
 import { request } from "http";
 import { useRouter } from "next/router";
+import { revalidatePath } from "next/cache";
+
 export const auth_login_action = async (data: any, form: FormData) => {
   const email = form.get("email") as string;
   const password = form.get("password") as string;
@@ -50,7 +52,6 @@ export const auth_register_action = async (data: RegisterSchemaType) => {
       middle_name,
       phone_number
     });
-
     return {
       success: true,
       message: "Registration successfully ✌️✌️"
@@ -83,6 +84,11 @@ export const createWineAction = async (
         }
       }
     });
+    console.log("revalidating the path");
+    revalidatePath("/", "page");
+
+    console.log("Completed revalidating the path");
+
     return {
       message: "Wine created successfully",
       status: 200,

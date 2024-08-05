@@ -2,9 +2,11 @@
 
 import * as React from 'react'
 import {
-  CaretSortIcon,
   ChevronDownIcon,
-  DotsHorizontalIcon
+  DoubleArrowLeftIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  DoubleArrowRightIcon
 } from '@radix-ui/react-icons'
 import {
   ColumnDef,
@@ -20,17 +22,13 @@ import {
 } from '@tanstack/react-table'
 
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -41,147 +39,15 @@ import {
 } from '@/components/ui/table'
 import { DataTablePagination } from '../components/dataTablePagination'
 import { Wine } from '@prisma/client'
+import { WineColumns } from '../(wine)/product/columns'
+import { revalidatePath } from 'next/cache'
 
-// const data: Payment[] = [
-//   {
-//     id: 'm5gr84i9',
-//     amount: 316,
-//     status: 'success',
-//     email: 'ken99@yahoo.com'
-//   },
-//   {
-//     id: '3u1reuv4',
-//     amount: 242,
-//     status: 'success',
-//     email: 'Abe45@gmail.com'
-//   },
-//   {
-//     id: 'derv1ws0',
-//     amount: 837,
-//     status: 'processing',
-//     email: 'Monserrat44@gmail.com'
-//   },
-//   {
-//     id: '5kma53ae',
-//     amount: 874,
-//     status: 'success',
-//     email: 'Silas22@gmail.com'
-//   },
-//   {
-//     id: 'bhqecj4p',
-//     amount: 721,
-//     status: 'failed',
-//     email: 'carmella@hotmail.com'
-//   }
-// ]
-
-// export type Payment = {
-//   id: string
-//   amount: number
-//   status: 'pending' | 'processing' | 'success' | 'failed'
-//   email: string
-// }
-
-// export const columns: ColumnDef<Payment>[] = [
-//   {
-//     id: 'select',
-//     header: ({ table }) => (
-//       <Checkbox
-//         checked={
-//           table.getIsAllPageRowsSelected() ||
-//           (table.getIsSomePageRowsSelected() && 'indeterminate')
-//         }
-//         onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-//         aria-label='Select all'
-//       />
-//     ),
-//     cell: ({ row }) => (
-//       <Checkbox
-//         checked={row.getIsSelected()}
-//         onCheckedChange={value => row.toggleSelected(!!value)}
-//         aria-label='Select row'
-//       />
-//     ),
-//     enableSorting: false,
-//     enableHiding: false
-//   },
-//   {
-//     accessorKey: 'status',
-//     header: 'Status',
-//     cell: ({ row }) => (
-//       <div className='capitalize'>{row.getValue('status')}</div>
-//     )
-//   },
-//   {
-//     accessorKey: 'email',
-//     header: ({ column }) => {
-//       return (
-//         <Button
-//           variant='ghost'
-//           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-//         >
-//           Email
-//           <CaretSortIcon className='ml-2 h-4 w-4' />
-//         </Button>
-//       )
-//     },
-//     cell: ({ row }) => <div className='lowercase'>{row.getValue('email')}</div>
-//   },
-//   {
-//     accessorKey: 'amount',
-//     header: () => <div className='text-right'>Amount</div>,
-//     cell: ({ row }) => {
-//       const amount = parseFloat(row.getValue('amount'))
-
-//       // Format the amount as a dollar amount
-//       const formatted = new Intl.NumberFormat('en-US', {
-//         style: 'currency',
-//         currency: 'USD'
-//       }).format(amount)
-
-//       return <div className='text-right font-medium'>{formatted}</div>
-//     }
-//   },
-//   {
-//     id: 'actions',
-//     enableHiding: false,
-//     cell: ({ row }) => {
-//       const payment = row.original
-
-//       return (
-//         <DropdownMenu>
-//           <DropdownMenuTrigger asChild>
-//             <Button variant='ghost' className='h-8 w-8 p-0'>
-//               <span className='sr-only'>Open menu</span>
-//               <DotsHorizontalIcon className='h-4 w-4' />
-//             </Button>
-//           </DropdownMenuTrigger>
-//           <DropdownMenuContent align='end'>
-//             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-//             <DropdownMenuItem
-//               onClick={() => navigator.clipboard.writeText(payment.id)}
-//             >
-//               Copy payment ID
-//             </DropdownMenuItem>
-//             <DropdownMenuSeparator />
-//             <DropdownMenuItem>View customer</DropdownMenuItem>
-//             <DropdownMenuItem>View payment details</DropdownMenuItem>
-//           </DropdownMenuContent>
-//         </DropdownMenu>
-//       )
-//     }
-//   }
-// ]
-interface DataTableDemoProps {
-  data: any[]
-  columns: ColumnDef<Wine>[]
-  searchField: string
-}
-export const DataTableDemo: React.FC<DataTableDemoProps> = ({
-  data,
-  columns,
-  searchField
-}) => {
+export const WineDataTableDemo = () => {
+  const [data, setData] = React.useState<{
+    wine: Wine[]
+    count: number
+  } | null>(null)
+  const [loading, setLoading] = React.useState<boolean>(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -189,10 +55,35 @@ export const DataTableDemo: React.FC<DataTableDemoProps> = ({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [searchValue, setSearchValue] = React.useState('')
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 10
+  })
+
+  const fetchData = React.useCallback(async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(
+        `/api/wine/read?pageIndex=${pagination.pageIndex}&pageSize=${pagination.pageSize}&search=${searchValue}`
+      )
+
+      const result = await response.json()
+      setData(result)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [pagination.pageIndex, pagination.pageSize, searchValue])
+
+  React.useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const table = useReactTable({
-    data,
-    columns,
+    data: data?.wine || [],
+    columns: WineColumns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -201,29 +92,31 @@ export const DataTableDemo: React.FC<DataTableDemoProps> = ({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
+    pageCount: Math.ceil((data?.count || 0) / pagination.pageSize),
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection
-    }
+      rowSelection,
+      pagination
+    },
+    manualFiltering: true,
+    manualPagination: true
   })
 
+  console.log('Prev pagination count', pagination)
   return (
-    <div className='justify-start h-full w-full items-center px-5 py-11 '>
-      <div className='w-[100%] h-[80%] flex flex-col bg-white p-5'>
+    <div className='justify-start h-full w-full items-center px-5 py-11'>
+      <div className='w-[100%] h-[100%] flex flex-col bg-white p-5'>
         <div className='flex items-center py-4'>
           <Input
             placeholder='Search'
-            value={
-              (table.getColumn(`${searchField}`)?.getFilterValue() as string) ??
-              ''
-            }
-            onChange={event =>
-              table
-                .getColumn(`${searchField}`)
-                ?.setFilterValue(event.target.value)
-            }
+            value={searchValue}
+            onChange={event => {
+              setSearchValue(event.target.value)
+              table.getColumn('name')?.setFilterValue(event.target.value)
+            }}
             className='max-w-sm'
           />
           <DropdownMenu>
@@ -236,30 +129,28 @@ export const DataTableDemo: React.FC<DataTableDemoProps> = ({
               {table
                 .getAllColumns()
                 .filter(column => column.getCanHide())
-                .map(column => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className='capitalize'
-                      checked={column.getIsVisible()}
-                      onCheckedChange={value =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  )
-                })}
+                .map(column => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className='capitalize'
+                    checked={column.getIsVisible()}
+                    onCheckedChange={value => column.toggleVisibility(!!value)}
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className='rounded-md border h-[90%]'>
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map(header => {
-                    return (
+        <div className='rounded-md border h-[60%] overflow-y-scroll no-scrollbar'>
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            <Table className='h-[100%]'>
+              <TableHeader>
+                {table.getHeaderGroups().map(headerGroup => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map(header => (
                       <TableHead key={header.id}>
                         {header.isPlaceholder
                           ? null
@@ -268,40 +159,40 @@ export const DataTableDemo: React.FC<DataTableDemoProps> = ({
                               header.getContext()
                             )}
                       </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map(row => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map(cell => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
                     ))}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className='h-24 text-center'
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                ))}
+              </TableHeader>
+              <TableBody className=''>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map(row => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                    >
+                      {row.getVisibleCells().map(cell => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={WineColumns.length}
+                      className='h-24 text-center'
+                    >
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          )}
         </div>
         <div className='flex items-center justify-end space-x-2 py-4'>
           <DataTablePagination table={table} key={'tedo'} />
@@ -311,4 +202,4 @@ export const DataTableDemo: React.FC<DataTableDemoProps> = ({
   )
 }
 
-export default DataTableDemo
+export default WineDataTableDemo

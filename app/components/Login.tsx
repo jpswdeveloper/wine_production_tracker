@@ -21,6 +21,7 @@ const LoginComp = () => {
   // Attach user data into the redux
   const auth = useAppSelector(state => state.auth)
   const dispatch = useAppDispatch()
+  console.log('state', state)
 
   useEffect(() => {
     if (state.success == true) {
@@ -37,11 +38,10 @@ const LoginComp = () => {
 
       router.replace('/')
       toast.success(state.message || 'Login Successfully')
-    }
-    if (state.success == false) {
+    } else if (!state.success && state.message != '') {
       toast.error(state.message || 'Unauthorized')
     }
-    if (auth.isAuthenticated) {
+    if (auth?.isAuthenticated) {
       router.replace('/')
     }
   }, [state, router, auth, dispatch])
