@@ -12,9 +12,7 @@ import { logoutAction } from './action'
 
 const Sidebar = () => {
   const pathname = usePathname()
-  const dispatch = useAppDispatch()
   const handleLogut = () => {
-    dispatch(logOut())
     logoutAction()
   }
   return (

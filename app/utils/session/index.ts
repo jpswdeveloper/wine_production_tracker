@@ -40,6 +40,7 @@ export const verifyData = async (
     );
     return { status: 200, payload };
   } catch (error) {
+    destroySession();
     return { status: 401, error };
   }
 };
