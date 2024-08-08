@@ -38,13 +38,14 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { DataTablePagination } from '../components/dataTablePagination'
-import { Wine } from '@prisma/client'
+import { ProductionStage, Wine } from '@prisma/client'
 import { WineColumns } from '../(wine)/product/columns'
 import { revalidatePath } from 'next/cache'
+import { StageSColumn } from '../(wine)/stages/columns'
 
 export const WineStageTableDemo = () => {
   const [data, setData] = React.useState<{
-    wine: Wine[]
+    stages: ProductionStage[]
     count: number
   } | null>(null)
   const [loading, setLoading] = React.useState<boolean>(true)
@@ -65,7 +66,7 @@ export const WineStageTableDemo = () => {
     setLoading(true)
     try {
       const response = await fetch(
-        `/api/wine/read?pageIndex=${pagination.pageIndex}&pageSize=${pagination.pageSize}&search=${searchValue}`
+        `/api/wine/stages?pageIndex=${pagination.pageIndex}&pageSize=${pagination.pageSize}&search=${searchValue}`
       )
 
       const result = await response.json()
@@ -82,8 +83,8 @@ export const WineStageTableDemo = () => {
   }, [fetchData])
 
   const table = useReactTable({
-    data: data?.wine || [],
-    columns: WineColumns,
+    data: data?.stages || [],
+    columns: StageSColumn,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

@@ -41,7 +41,9 @@ export const StageSColumn: ColumnDef<ProductionStage>[] = [
 
   {
     accessorKey: 'name',
-    header: () => <div className='text-right'>Wine Name</div>,
+    header: () => (
+      <div className='text-left font-bold text-black'>Wine Name</div>
+    ),
     cell: ({ row }) => {
       return (
         <div className='text-right font-medium'>{row.getValue('name')}</div>
@@ -50,7 +52,7 @@ export const StageSColumn: ColumnDef<ProductionStage>[] = [
   },
   {
     accessorKey: 'createdAt',
-    header: () => <div className='text-right'>Wine Date created at</div>,
+    header: () => <div className='text-right'>created at</div>,
     cell: ({ row }) => {
       return (
         <div className='text-right font-medium'>
@@ -61,7 +63,7 @@ export const StageSColumn: ColumnDef<ProductionStage>[] = [
   },
   {
     accessorKey: 'updatedAt',
-    header: () => <div className='text-right'>Wine Date updated at</div>,
+    header: () => <div className='text-right'>updated at</div>,
     cell: ({ row }) => {
       return (
         <div className='text-right font-medium'>

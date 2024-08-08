@@ -2,7 +2,7 @@
 import React from 'react'
 import Link from 'next/link'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Avatar } from '@/components/ui/avatar'
 import { LogOut } from 'lucide-react'
@@ -12,8 +12,10 @@ import { logoutAction } from './action'
 
 const Sidebar = () => {
   const pathname = usePathname()
+  const router = useRouter()
   const handleLogut = () => {
     logoutAction()
+    router.replace('/auth/login')
   }
   return (
     <div className='flex flex-col justify-start  h-screen overflow-hidden p-5 relative'>
@@ -73,6 +75,16 @@ const Sidebar = () => {
           }
         >
           Stages
+        </Link>
+        <Link
+          href='/sensors'
+          className={
+            pathname == '/sensors'
+              ? 'bg-sky-700 active text-white p-5 w-full h-[50px] items-center justify-start flex rounded-l-lg'
+              : 'text-black bg-slate-50 flex p-5 w-full h-[50px] items-center justify-start rounded-l-lg'
+          }
+        >
+          Sensor
         </Link>
         <Link
           href='/notifications'

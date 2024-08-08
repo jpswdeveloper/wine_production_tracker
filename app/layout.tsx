@@ -25,21 +25,7 @@ export default function RootLayout ({
   return (
     <html lang='en' suppressHydrationWarning>
       <body>
-        <div>
-          {/* {auth?.auth?.isAuthenticated ? ( */}
-          <div className='flex w-full h-full '>
-            <div className='w-[250px] h-full flex items-center'>
-              <Sidebar />
-            </div>
-            <div className='bg-[#F5F6F8] flex items-start w-full h-screen flex-col px-2 py-2 '>
-              <NavBar />
-              {children}
-            </div>
-          </div>
-          {/* ) : ( */}
-          {/* <Login/> */}
-          {/* )} */}
-        </div>
+        <AuthorizedLayout>{children}</AuthorizedLayout>
       </body>
     </html>
   )

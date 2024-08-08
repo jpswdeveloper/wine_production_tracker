@@ -1,15 +1,8 @@
 'use client'
 
 import * as React from 'react'
+import { ChevronDownIcon } from '@radix-ui/react-icons'
 import {
-  ChevronDownIcon,
-  DoubleArrowLeftIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DoubleArrowRightIcon
-} from '@radix-ui/react-icons'
-import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -38,13 +31,12 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { DataTablePagination } from '../components/dataTablePagination'
-import { Wine } from '@prisma/client'
-import { WineColumns } from '../(wine)/product/columns'
-import { revalidatePath } from 'next/cache'
+import { Sensor } from '@prisma/client'
+import { SensorColumns } from '../(wine)/sensors/columns'
 
-export const WineDataTableDemo = () => {
+export const SensorDataTableDemo = () => {
   const [data, setData] = React.useState<{
-    wine: Wine[]
+    sensor: Sensor[]
     count: number
   } | null>(null)
   const [loading, setLoading] = React.useState<boolean>(true)
@@ -65,7 +57,7 @@ export const WineDataTableDemo = () => {
     setLoading(true)
     try {
       const response = await fetch(
-        `/api/wine/read?pageIndex=${pagination.pageIndex}&pageSize=${pagination.pageSize}&search=${searchValue}`
+        `/api/wine/sensor?pageIndex=${pagination.pageIndex}&pageSize=${pagination.pageSize}&search=${searchValue}`
       )
 
       const result = await response.json()
@@ -82,8 +74,8 @@ export const WineDataTableDemo = () => {
   }, [fetchData])
 
   const table = useReactTable({
-    data: data?.wine || [],
-    columns: WineColumns,
+    data: data?.sensor || [],
+    columns: SensorColumns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -183,7 +175,7 @@ export const WineDataTableDemo = () => {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={WineColumns.length}
+                      colSpan={SensorColumns.length}
                       className='h-24 text-center'
                     >
                       No results.
@@ -202,4 +194,4 @@ export const WineDataTableDemo = () => {
   )
 }
 
-export default WineDataTableDemo
+export default SensorDataTableDemo

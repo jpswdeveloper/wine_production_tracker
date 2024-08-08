@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Wine } from '@prisma/client'
+import { Sensor, Wine } from '@prisma/client'
 import { Checkbox } from '@radix-ui/react-checkbox'
 import {
   DropdownMenu,
@@ -18,7 +18,7 @@ import moment from 'moment'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-export const WineColumns: ColumnDef<Wine>[] = [
+export const SensorColumns: ColumnDef<Sensor>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -43,17 +43,24 @@ export const WineColumns: ColumnDef<Wine>[] = [
   },
 
   {
-    accessorKey: 'name',
-    header: () => <div className='text-right'>Wine Name</div>,
+    accessorKey: 'Name',
+    header: () => <div className='text-left'>Name</div>,
+    cell: ({ row }) => {
+      return <div className='text-right font-medium'>{row.original.name}</div>
+    }
+  },
+  {
+    accessorKey: 'Description',
+    header: () => <div className='text-center'>Description</div>,
     cell: ({ row }) => {
       return (
-        <div className='text-right font-medium'>{row.getValue('name')}</div>
+        <div className='text-start font-medium'>{row.original.description}</div>
       )
     }
   },
   {
     accessorKey: 'createdAt',
-    header: () => <div className='text-right'>Wine Date created at</div>,
+    header: () => <div className='text-right'>Sensor Date created at</div>,
     cell: ({ row }) => {
       return (
         <div className='text-right font-medium'>
@@ -64,7 +71,7 @@ export const WineColumns: ColumnDef<Wine>[] = [
   },
   {
     accessorKey: 'updatedAt',
-    header: () => <div className='text-right'>Wine Date updated at</div>,
+    header: () => <div className='text-right'>Sensor Date updated at</div>,
     cell: ({ row }) => {
       return (
         <div className='text-right font-medium'>
@@ -75,18 +82,11 @@ export const WineColumns: ColumnDef<Wine>[] = [
   },
 
   {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <div className='capitalize'>{row.getValue('status')}</div>
-    )
-  },
-  {
     id: 'actions',
     enableHiding: false,
     cell: ({ row }) => {
-      const wine = row.original
-      const router = useRouter()
+      const sensor = row.original
+      // const router = useRouter()
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -106,21 +106,18 @@ export const WineColumns: ColumnDef<Wine>[] = [
             <div className='p-2 flex items-center justify-start gap-2 flex-col w-full'>
               <DropdownMenuItem
                 onClick={() => {
-                  router.push(`/product/${row.original.id}`)
+                  // router.push(`/product/${row.original.id}`)
                 }}
                 className='flex items-center gap-2 w-full border-none cursor-pointer'
               >
                 <Edit className='text-red-300' />
-                Edit Wine
+                Edit
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className=' cursor-pointer flex items-center w-full justify-between gap-2'>
-                <CirclePlusIcon className='text-sky-700' /> Add Stage for wine
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
+
               <DropdownMenuItem className='flex items-center gap-2 w-full cursor-pointer'>
                 <DeleteIcon className='text-red-600' />
-                delete Wine
+                delete
               </DropdownMenuItem>
             </div>
           </DropdownMenuContent>

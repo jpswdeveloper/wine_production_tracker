@@ -13,13 +13,15 @@ export async function middleware(request: NextRequest) {
     if (verifyUser.status === 401) {
       throw Error("Unauthorized");
     }
-    // return NextResponse.next();
+    return NextResponse.next();
   } catch (error) {
     console.log("Error is happening", JSON.stringify(error));
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+    return NextResponse.redirect(new URL("/auth/login", request.url), {
+      status: 303
+    });
   }
 }
 
 export const config = {
-  matcher: ["/", "/product"]
+  matcher: ["/product", "/stages"]
 };

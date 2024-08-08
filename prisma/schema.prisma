@@ -39,22 +39,23 @@ model Wine {
 }
 
 model ProductionStage {
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
-  wine          Wine           @relation(fields: [wineId], references: [id])
-  wineId        String         @db.ObjectId
+  id            String             @id @default(auto()) @map("_id") @db.ObjectId
+  wine          Wine               @relation(fields: [wineId], references: [id])
+  wineId        String             @db.ObjectId
   stage         String
   status        String
+  description   String?
   startDate     DateTime
   endDate       DateTime?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
   Harvesting    Harvesting?
   Crushing      Crushing?
   Fermentation  Fermentation?
   Clarification Clarification?
   Aging         Aging?
   Bottling      Bottling?
-  sensors       Sensor[]
+  sensors       SensorProduction[]
 }
 
 model Harvesting {
@@ -114,11 +115,20 @@ model Bottling {
 }
 
 model Sensor {
-  id          String          @id @default(auto()) @map("_id") @db.ObjectId
-  sensorId    String          @unique
-  stage       ProductionStage @relation(fields: [stageId], references: [id])
-  stageId     String          @db.ObjectId
+  id          String             @id @default(auto()) @map("_id") @db.ObjectId
   description String?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  name        String
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  stage       SensorProduction[]
+}
+
+model SensorProduction {
+  id                String           @id @default(auto()) @map("_id") @db.ObjectId
+  productionStageId String?          @db.ObjectId
+  sensorId          String?          @db.ObjectId
+  ProductionStage   ProductionStage? @relation(fields: [productionStageId], references: [id])
+  Sensor            Sensor?          @relation(fields: [sensorId], references: [id])
+
+  @@unique([productionStageId, sensorId])
 }

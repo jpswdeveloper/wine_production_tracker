@@ -2,15 +2,12 @@
 import { RegisterSchemaType } from "../utils/schema/register";
 import { createUser, findSingleUser } from "../server/user/index";
 import bcrypt from "bcryptjs";
-import { destroySession, session, verifyData } from "../utils/session";
-import { Prisma, User } from "@prisma/client";
+import { destroySession, session } from "../utils/session";
 import { createWineDA } from "../server/wine/create";
-import { WineT } from "../utils/schema/wine";
+import { SensorT, WineStageT, WineT } from "../utils/schema/wine";
 import { NextRequest, NextResponse } from "next/server";
-import { request } from "http";
-import { useRouter } from "next/router";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { db } from "../utils/prisma";
 
 export const auth_login_action = async (data: any, form: FormData) => {
   const email = form.get("email") as string;
@@ -103,6 +100,47 @@ export const createWineAction = async (
     };
   }
 };
+
+// Add stage for wine
+export const createWineStageAction = async (
+  data: WineStageT
+): Promise<{
+  message: string;
+  status: number;
+  success: boolean;
+}> => {
+  try {
+    const { wineId, ...otherData } = data;
+    await db.productionStage.create({
+      data: {
+        ...otherData,
+        status: "PENDING",
+        startDate: new Date(),
+        wine: {
+          connect: {
+            id: wineId
+          }
+        }
+      }
+    });
+    console.log("revalidating the path");
+    revalidatePath("/", "page");
+
+    console.log("Completed revalidating the path");
+
+    return {
+      message: "Wine Stages created successfully",
+      status: 200,
+      success: true
+    };
+  } catch (error: any) {
+    return {
+      message: error?.message || "Failed to create wine stage",
+      status: error?.status || 400,
+      success: false
+    };
+  }
+};
 export const getUser = async (request?: NextRequest) => {
   try {
     // console.log("Get user Middle ware is running");
@@ -123,4 +161,27 @@ export const getUser = async (request?: NextRequest) => {
 
 export const logoutAction = async () => {
   destroySession();
+};
+
+export const createSensorAction = async (data: SensorT) => {
+  try {
+    const sensordata = await db.sensor.create({
+      data: {
+        name: data.name,
+        description: data.description
+      }
+    });
+
+    return {
+      message: "Sensors created successfully",
+      status: 200,
+      success: true
+    };
+  } catch (error: any) {
+    return {
+      message: error?.message || "Failed to create wine stage",
+      status: error?.status || 400,
+      success: false
+    };
+  }
 };

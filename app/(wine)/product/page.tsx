@@ -1,8 +1,5 @@
 import { CreateProduct } from '@/app/components/Dialog'
-import { Wine } from '@prisma/client'
-import { WineColumns } from './columns'
-import { ToastBar, Toaster } from 'react-hot-toast'
-import { getAllWine } from '@/app/server/wine/getall'
+import { Toaster } from 'react-hot-toast'
 import WineDataTableDemo from '@/app/components/Table'
 
 const WinePage = async () => {

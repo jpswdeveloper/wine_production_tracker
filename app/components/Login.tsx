@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
 import { auth_login_action } from './action'
 import toast from 'react-hot-toast'
-import { useRouter } from 'next/navigation'
 import { useAppDispatch, useAppSelector } from '@/lib/hook'
 import { logOut, setAuth } from '@/lib/feature/auth/authSlice'
 import { User } from '@prisma/client'
+import { useRouter } from 'next/navigation'
 
 const loginMessage = {
   message: '',
@@ -15,22 +15,18 @@ const loginMessage = {
 }
 
 const LoginComp = () => {
-  const router = useRouter()
   const { pending, data } = useFormStatus()
   const [state, formAction] = useFormState(auth_login_action, loginMessage)
-
+  const router = useRouter()
+  console.log('state', state)
   useEffect(() => {
-    if (state.success == true) {
-      console.log({
-        isAuthenticated: true,
-        user: state.data?.user || null
-      })
-
+    if (state?.success == true) {
       toast.success(state.message)
-    } else if (!state.success && state.message != '') {
+      router.refresh()
+      router.push('/')
+    } else if (!state?.success && state?.message != '') {
       toast.error(state.message || 'Unauthorized')
     }
-    router.push('/')
   }, [state])
 
   return (

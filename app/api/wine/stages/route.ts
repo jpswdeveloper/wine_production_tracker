@@ -1,23 +1,13 @@
-import { getAllWine } from "@/app/server/wine/getall";
-import { db } from "@/app/utils/prisma";
-import { NextRequest } from "next/server";
+import { getAllStageWine } from "@/app/server/wine/stages/getall";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-
     const pageIndex = searchParams.get("pageIndex");
     const perPage = searchParams.get("pageSize");
     const search = searchParams.get("search");
 
-    console.log(
-      "Search from stages",
-      search,
-      "lenght of search",
-      search?.length
-    );
-
-    const getAllData = await getAllWine({
+    const getAllData = await getAllStageWine({
       pageIndex: Number(Number(pageIndex) == 0 ? 1 : pageIndex || 0),
       perPage: Number(perPage || 5),
       ...(search && { search: search })
@@ -25,6 +15,6 @@ export async function GET(request: Request) {
 
     return Response.json(getAllData, { status: 200 });
   } catch (error) {
-    console.error("Error fetching data:", error);
+    throw new Error("Error fetching Wine Stages");
   }
 }

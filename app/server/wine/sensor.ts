@@ -1,7 +1,7 @@
 import { db } from "@/app/utils/prisma";
-import { Wine } from "@prisma/client";
+import { Sensor, Wine } from "@prisma/client";
 
-export const getAllWine = async ({
+export const getAllSensor = async ({
   search,
   pageIndex,
   perPage
@@ -9,24 +9,13 @@ export const getAllWine = async ({
   search?: string;
   pageIndex?: number;
   perPage?: number;
-}): Promise<{ wine: Wine[]; count: number }> => {
+}): Promise<{ sensor: Sensor[]; count: number }> => {
   try {
     const limit = Number(perPage) || 5;
     const offset = Number(pageIndex) - 1 || 0;
     const skip = limit * offset;
-    console.log(
-      "limit",
-      limit,
-      "offset",
-      offset,
-      "skip",
-      skip,
-      search,
-      "length",
-      search?.length
-    );
 
-    const products = await db.wine.findMany({
+    const sensors = await db.sensor.findMany({
       ...(search && {
         where: {
           OR: [
@@ -41,13 +30,13 @@ export const getAllWine = async ({
         createdAt: "desc"
       }
     });
-    const count = await db.wine.count();
+    const count = await db.sensor.count();
     return {
-      wine: products,
+      sensor: sensors,
       count
     };
   } catch (error) {
     console.log("error", error);
-    throw Error("Failed to fetch products");
+    throw Error("Failed to fetch sensors");
   }
 };

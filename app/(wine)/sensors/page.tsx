@@ -5,16 +5,18 @@ import { getAllWine } from '@/app/server/wine/getall'
 import WineDataTableDemo from '@/app/components/Table'
 import WineStageTableDemo from '@/app/components/StageTable'
 import CreateStageProduct from '@/app/components/CreateStageProduct'
+import SensorDataTableDemo from '@/app/components/SensorTable'
+import CreateSensor from '@/app/components/sensorAddDIalog'
 
-const WineStagePage = async () => {
+const Sensors = async () => {
   return (
     <div className='justify-start h-full w-full items-center px-5 py-11 relative'>
-      <WineStageTableDemo />
+      <SensorDataTableDemo />
       <div className='flex bottom-[50px] right-[50px] absolute'>
-        <CreateStageProduct
-          title={'Add Stage for Product'}
-          header='Wine Stage Entry'
-          description='Please Enter Stages for wine'
+        <CreateSensor
+          title={'Add Sensor'}
+          header='Wine tracer sensor Entry'
+          description='Please Enter sensor for tracing wine stages'
         />
       </div>
       <Toaster position='bottom-left' />
@@ -22,4 +24,4 @@ const WineStagePage = async () => {
   )
 }
 
-export default WineStagePage
+export default Sensors
